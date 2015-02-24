@@ -46,7 +46,19 @@ package src
 	   
    }
   
-   public def printcontents() {
+   public def printcontents(String tableName) {
+	   def rows = []
+	   try {
+		   sql.eachRow('Select * from ' + tableName) {
+				   rows << it.toRowResult()
+			   }
+	   } catch (Exception e) {
+			   e.printStackTrace()
+	   }
+	   rows
+   }  
+	   
+   public def printcontents(){
 	   sql.eachRow("select * from Course") {
 		   println("Course=${it.CourseN}, Coursename= ${it.CourseName}, Units= ${it.NUnit}")
 	   }
@@ -84,7 +96,7 @@ package src
    databse.printcontents()
    println(databse.getTableRows("Course"))
    
-   
+   // ------------------------------ NOTES ------------------------
    //sql.execute("drop table if exists person")
    //sql.execute("create table person (id integer, name string)")
 	
