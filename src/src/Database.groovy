@@ -46,24 +46,22 @@ package src
 	   
    }
   
+   /**
+    * Prints the contents of the Table name
+    * @param tableName name of table
+    */
    public def printcontents(String tableName) {
 	   def rows = []
 	   try {
 		   sql.eachRow('Select * from ' + tableName) {
-				   rows << it.toRowResult()
+				   println(it.toString())
 			   }
 	   } catch (Exception e) {
 			   e.printStackTrace()
 	   }
-	   rows
    }  
 	   
-   public def printcontents(){
-	   sql.eachRow("select * from Course") {
-		   println("Course=${it.CourseN}, Coursename= ${it.CourseName}, Units= ${it.NUnit}")
-	   }
-   }
-   
+  
    /**
 	* Returns an Array of all the Rows in a specified table
 	* @param String tableName
@@ -87,14 +85,14 @@ package src
   
    
    def databse = new SQLLiteDatabase("Students.db")
-   databse.printcontents()
-   
-   println()
    
    //databse.add("Course", [CourseN:10, Coursename:"NewCourse", Nunit: 6])
    
-   databse.printcontents()
    println(databse.getTableRows("Course"))
+   
+   println()
+   
+   databse.printcontents("Course")
    
    // ------------------------------ NOTES ------------------------
    //sql.execute("drop table if exists person")
