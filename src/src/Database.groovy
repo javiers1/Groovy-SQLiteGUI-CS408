@@ -88,10 +88,10 @@ import groovy.sql.Sql
 	* Returns a List of all the Rows in a specified table without column name.
 	* @param String tableName
 	*
-	* @return an Array of RowResultObjects. A RowResultObject is basically a <Key, Value> map,
-	* where the Key is the Column Name, and the Value is the Object
+	* @return  A 2D Array (with a toString() method) that represents the Table rows 
+	* 		   without column names
 	*
-	* i.e. [Student: javier, ID: 2564]
+	* i.e. [[Javier, 2134, A],[Bob, 2346, B]]
 	*/
    public def getTableRowsWithoutColumnName(String tableName){
 	   def rows = []
@@ -135,30 +135,69 @@ import groovy.sql.Sql
 	   headers
    }
    
+   /**
+    * Performs the specified String query on the Database file. 
+    * If Query String is invalid, prints an error Message.
+    * 
+    * @param query String
+    * @return Array of GroovyRowResult objects (NOTE: RowResult objects is basically a Map<K,V>)
+    * GroovyRowResult Objects have a toString method
+    */
+   public def query(String query){
+	   def rows = []
+	   try{
+		   sql.eachRow(query) { 
+			   rows << it.toRowResult()
+		   }
+	   } catch (Exception e){
+	   		println("SORRY SON: YOUR STRING QUERY IS MESSED UP DOGG")
+	   		e.printStackTrace()
+	   }
+	   def result = []
+	   for(int i = 0; i < rows.size(); i++){
+		   result << new ArrayList()
+	   }
+	   int j = 0
+	   for(GroovyRowResult rowObject: rows){
+		   for(int i = 0; i < rowObject.size(); i++){
+			   result.get(j).add(rowObject.getAt(i))
+		   }
+		   j++
+	   }
+	   result  
+   }
+   
    
 }
    
-   def databse = new SQLLiteDatabase("Students.db")
+   def myDatabase = new SQLLiteDatabase("Students.db")
+   
+   //An example of how to add to the course table. NOTE: once you add a row, it is written to the DB
+   //You cannot add a row with identical primary keys as another row.
    
    //databse.add("Course", [CourseN:10, Coursename:"NewCourse", Nunit: 6])
    
-   println(databse.getTableRowsWithColumnName("Course"))
+   println(myDatabase.getTableRowsWithColumnName("Course"))
    
    println()
    
-   println(databse.getTableRowsWithoutColumnName("Course"))
+   println(myDatabase.getTableRowsWithoutColumnName("Course"))
    
    println()
    
-   databse.printContentsWithColumnNames("Course")
+   myDatabase.printContentsWithColumnNames("Course")
    
    println()
    
-   databse.printContentsWithColumnNames("Student")
+   myDatabase.printContentsWithColumnNames("Student")
       
    println()
    
-   println(databse.getTableHeaders("Course"))
+   println(myDatabase.getTableHeaders("Course"))
+   
+   println()
+   
+   println(myDatabase.query("select * from Course where CourseN = 2"))
    // ------------------------------ NOTES ------------------------
    //sql.execute("drop table if exists person")
    //sql.execute("create table person (id integer, name string)")
