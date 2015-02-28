@@ -1,7 +1,8 @@
 package src
    import java.sql.*
    import org.sqlite.SQLite
-   import groovy.sql.Sql
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 	
    /**
     * Takes in a Database name as a String in the Constructor and attempts to connect
@@ -50,7 +51,7 @@ package src
     * Prints the contents of the Table name
     * @param tableName name of table
     */
-   public def printcontents(String tableName) {
+   public def printContentsWithColumnNames(String tableName) {
 	   def rows = []
 	   try {
 		   sql.eachRow('Select * from ' + tableName) {
@@ -63,7 +64,7 @@ package src
 	   
   
    /**
-	* Returns a List of all the Rows in a specified table. 
+	* Returns a List of all the Rows in a specified table with column name.
 	* @param String tableName
 	* 
 	* @return an Array of RowResultObjects. A RowResultObject is basically a <Key, Value> map,
@@ -71,7 +72,7 @@ package src
 	* 
 	* i.e. [Student: javier, ID: 2564]
 	*/
-   public def getTableRows(String tableName){
+   public def getTableRowsWithColumnName(String tableName){
 	   def rows = []
 	   try { 
 		   sql.eachRow('Select * from ' + tableName) {
@@ -83,9 +84,42 @@ package src
 	   rows
    }
    
+   /**
+	* Returns a List of all the Rows in a specified table without column name.
+	* @param String tableName
+	*
+	* @return an Array of RowResultObjects. A RowResultObject is basically a <Key, Value> map,
+	* where the Key is the Column Name, and the Value is the Object
+	*
+	* i.e. [Student: javier, ID: 2564]
+	*/
+   public def getTableRowsWithoutColumnName(String tableName){
+	   def rows = []
+	   try {
+		   sql.eachRow('Select * from ' + tableName) {
+				   rows << it.toRowResult()
+			   }
+	   } catch (Exception e) {
+			   e.printStackTrace()
+	   }
+	   def result = []
+	   for(int i = 0; i < rows.size(); i++){
+		   result << new ArrayList()
+	   }
+	   int j = 0
+	   for(GroovyRowResult rowObject: rows){
+		   for(int i = 0; i < rowObject.size(); i++){
+			   result.get(j).add(rowObject.getAt(i))
+		   }
+		   j++
+	   }
+	   result
+   }
+   
+   
    
    /**
-    * Returns the table headers as an Array of Strings? for the specified tableName
+    * Returns the table column headers as an Array for the specified tableName
     * @param tableName
     * @return
     */
@@ -108,15 +142,19 @@ package src
    
    //databse.add("Course", [CourseN:10, Coursename:"NewCourse", Nunit: 6])
    
-   println(databse.getTableRows("Course"))
+   println(databse.getTableRowsWithColumnName("Course"))
    
    println()
    
-   databse.printcontents("Course")
+   println(databse.getTableRowsWithoutColumnName("Course"))
    
    println()
    
-   databse.printcontents("Student")
+   databse.printContentsWithColumnNames("Course")
+   
+   println()
+   
+   databse.printContentsWithColumnNames("Student")
       
    println()
    
