@@ -63,9 +63,13 @@ package src
 	   
   
    /**
-	* Returns an Array of all the Rows in a specified table
+	* Returns a List of all the Rows in a specified table. 
 	* @param String tableName
-	* @return an Array With table information
+	* 
+	* @return an Array of RowResultObjects. A RowResultObject is basically a <Key, Value> map,
+	* where the Key is the Column Name, and the Value is the Object
+	* 
+	* i.e. [Student: javier, ID: 2564]
 	*/
    public def getTableRows(String tableName){
 	   def rows = []
@@ -80,9 +84,25 @@ package src
    }
    
    
+   /**
+    * Returns the table headers as an Array of Strings? for the specified tableName
+    * @param tableName
+    * @return
+    */
+   public def getTableHeaders(String tableName){
+	   def aRow;
+	   try { 
+		   aRow = sql.firstRow('Select * from ' + tableName)
+	   } catch (Exception e) {
+	   		e.printStackTrace()
+	   }
+	   def headers;
+	   headers = new ArrayList(aRow.keySet())
+	   headers
    }
    
-  
+   
+}
    
    def databse = new SQLLiteDatabase("Students.db")
    
@@ -94,6 +114,13 @@ package src
    
    databse.printcontents("Course")
    
+   println()
+   
+   databse.printcontents("Student")
+      
+   println()
+   
+   println(databse.getTableHeaders("Course"))
    // ------------------------------ NOTES ------------------------
    //sql.execute("drop table if exists person")
    //sql.execute("create table person (id integer, name string)")
