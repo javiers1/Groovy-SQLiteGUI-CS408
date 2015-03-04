@@ -46,7 +46,20 @@ import groovy.sql.Sql
 	   }
 	   
    }
-  
+   
+   /**
+    * Deletes a Course from the Course table specified by CourseNumber
+    * @param CourseN
+    * @return
+    */
+   public delete(int CourseN){
+	   try{
+		   sql.execute('delete from Course where CourseN = ' + CourseN + ';')
+	   } catch (SQLException e){
+	   	   e.printStackTrace()
+	   }
+   }
+   
    /**
     * Prints the contents of the Table name
     * @param tableName name of table
@@ -81,8 +94,22 @@ import groovy.sql.Sql
 	   } catch (Exception e) {
 	   		e.printStackTrace()
 	   }
-	   rows
+	   def result = []
+	   for(int i = 0; i < rows.size(); i++){
+		   result[i] = rowAsMap(rows[i])
+	   }
+	   println(result)
+	   result
    }
+   
+   public Map rowAsMap(Map row){
+	   def rowMap = [:]
+	   row.keySet().each {
+		   column -> rowMap[column] = row[column]
+	   }
+	   return rowMap
+   }
+	   
    
    /**
 	* Returns a List of all the Rows in a specified table without column name.
@@ -145,29 +172,20 @@ import groovy.sql.Sql
     */
    public def query(String query){
 	   def rows = []
-	   try{
-		   sql.eachRow(query) { 
-			   rows << it.toRowResult()
-		   }
-	   } catch (Exception e){
-	   		println("SORRY SON: YOUR STRING QUERY IS MESSED UP DOGG")
+	   try { 
+		   sql.eachRow(query) {
+		   		rows << it.toRowResult()
+	   		}
+	   } catch (Exception e) {
 	   		e.printStackTrace()
 	   }
 	   def result = []
 	   for(int i = 0; i < rows.size(); i++){
-		   result << new ArrayList()
+		   result[i] = rowAsMap(rows[i])
 	   }
-	   int j = 0
-	   for(GroovyRowResult rowObject: rows){
-		   for(int i = 0; i < rowObject.size(); i++){
-			   result.get(j).add(rowObject.getAt(i))
-		   }
-		   j++
-	   }
+	   println(result)
 	   result  
    }
-   
-   
 }
    
    def myDatabase = new SQLLiteDatabase("Students.db")
@@ -197,7 +215,7 @@ import groovy.sql.Sql
    
    println()
    
-   println(myDatabase.query("select * from Course where CourseN = 2"))
+   println(myDatabase.query("select * from Course where NUnit >= 4"))
    // ------------------------------ NOTES ------------------------
    //sql.execute("drop table if exists person")
    //sql.execute("create table person (id integer, name string)")
