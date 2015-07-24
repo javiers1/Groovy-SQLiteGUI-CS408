@@ -1,3 +1,10 @@
+/**
+ * CS 408
+ * Javier Sanchez
+ * Elliot Ricca
+ * Crisrael Lucero
+ * Eric Chi
+ */
 package src
    import java.sql.*
    import org.sqlite.SQLite
